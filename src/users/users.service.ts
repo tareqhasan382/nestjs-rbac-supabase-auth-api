@@ -1,20 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+  async create(createUserDto: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const userData = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+    return await this.userRepository.save(userData);
   }
+  
+ async findOne(id: number) {
+    return await this.userRepository.findOne({where:{id}});
+  }
+
+
+
+   async findByEmail(email: string) {
+    return this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'name','role', 'password'], // include hidden fields
+    });
+  }
+
 
   findAll() {
-    return `This action returns all users`;
+    return this.userRepository.find({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;

@@ -1,27 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { UsersService } from 'src/users/users.service';
 
 
 @Injectable()
 export class AuthService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    private userService: UsersService,
+    private jwtService: JwtService,
+  ) {}
+
+
+  async register(createUserDto: CreateUserDto) {
+      const existingUser = await this.userService.findByEmail(createUserDto.email);
+
+    if (existingUser) {
+      throw new BadRequestException('User with this email already exists');
+    }
+    return this.userService.create(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async validateUser(email: string, password: string) {
+    const user = await this.userService.findByEmail(email);
+    console.log("user---------->",user)
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
+
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async login(user: any) {
+    const payload = { userId: user.id, email: user.email,id:user.id,role:user.role };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '24h',
+    });
+
+    // const refreshToken = this.jwtService.sign(payload, {
+    //   secret: process.env.JWT_REFRESH_SECRET,
+    //   expiresIn: '7d',
+    // });
+
+    // const hashedRefresh = await bcrypt.hash(refreshToken, 10);
+    // await this.userService.updateRefreshToken(user.id, hashedRefresh);
+
+    return accessToken  //{ accessToken, refreshToken };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+  
 }

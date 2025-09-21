@@ -4,15 +4,20 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../roles/role.enum';
+import { UsersService } from './users.service';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard,RolesGuard)
 export class UsersController {
-  @Get()
-  @Roles(Role.Admin, Role.SuperAdmin)
-  getAllUsers() {
-    return 'This route is restricted to Admins and SuperAdmins';
-  }
+  constructor(private readonly usersService: UsersService) {}
+  
+ 
+
+@Get()
+@Roles(Role.Admin, Role.User)
+async getAllUsers() {
+  return this.usersService.findAll();  // return actual users list
+}
 
   @Get('profile')
   @Roles(Role.User, Role.Admin, Role.SuperAdmin)
