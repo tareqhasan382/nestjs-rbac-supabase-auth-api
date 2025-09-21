@@ -32,7 +32,7 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
 
-    // Your app modules
+    // app modules
     UsersModule,
     AuthModule,
   ],
