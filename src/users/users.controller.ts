@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 
@@ -21,7 +21,12 @@ async getAllUsers() {
 
   @Get('profile')
   @Roles(Role.User, Role.Admin, Role.SuperAdmin)
-  getProfile() {
-    return 'Accessible by all authenticated roles';
+  async getProfile(@Req() req: any) {
+    const {userId} = req.user;
+    const user= await this.usersService.findOne(userId);
+    return {
+      message: "Accessible by all authenticated roles",
+      user
+    };
   }
 }

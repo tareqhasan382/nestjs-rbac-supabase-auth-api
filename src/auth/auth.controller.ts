@@ -21,7 +21,6 @@ export class AuthController {
     };
   }
 
-
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(
@@ -36,15 +35,6 @@ export class AuthController {
         accessToken: token,
       },
     };
-  }
-
-
-
-  
-  @UseGuards(JwtAuthGuard)
-  @Post('protected')
-  async protectedRoute(@Req() req) {
-    return { message: 'You have access', user: req.user };
   }
 }
 

@@ -24,7 +24,6 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
-    console.log("user---------->",user)
     if (!user) throw new UnauthorizedException('User not found');
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -41,15 +40,7 @@ export class AuthService {
       expiresIn: '24h',
     });
 
-    // const refreshToken = this.jwtService.sign(payload, {
-    //   secret: process.env.JWT_REFRESH_SECRET,
-    //   expiresIn: '7d',
-    // });
-
-    // const hashedRefresh = await bcrypt.hash(refreshToken, 10);
-    // await this.userService.updateRefreshToken(user.id, hashedRefresh);
-
-    return accessToken  //{ accessToken, refreshToken };
+    return accessToken;
   }
 
   

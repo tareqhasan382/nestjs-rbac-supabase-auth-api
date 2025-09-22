@@ -26,8 +26,6 @@ export class UsersService {
     return await this.userRepository.findOne({where:{id}});
   }
 
-
-
    async findByEmail(email: string) {
     return this.userRepository.findOne({
       where: { email },
@@ -38,14 +36,5 @@ export class UsersService {
 
   findAll() {
     return this.userRepository.find({});
-  }
-
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }
