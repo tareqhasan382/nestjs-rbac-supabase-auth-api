@@ -1,8 +1,8 @@
 {
   "name": "nest-rbac",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "exploring RBAC",
+  "author": "Tareq Hasan",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

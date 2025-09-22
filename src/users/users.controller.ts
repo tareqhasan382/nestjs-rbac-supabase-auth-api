@@ -6,14 +6,14 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../roles/role.enum';
 import { UsersService } from './users.service';
 
-@Controller('users')
+@Controller()
 @UseGuards(JwtAuthGuard,RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   
  
 
-@Get()
+@Get('users')
 @Roles(Role.Admin, Role.User)
 async getAllUsers() {
   return this.usersService.findAll();  // return actual users list
