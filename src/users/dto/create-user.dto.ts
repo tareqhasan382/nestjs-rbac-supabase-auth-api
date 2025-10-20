@@ -1,4 +1,13 @@
-import { IsString, MinLength, IsOptional, IsIn, IsEmail } from 'class-validator';
+import {
+  IsString,
+  MinLength,
+  IsOptional,
+  IsIn,
+  IsEmail,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @IsString()
@@ -14,4 +23,11 @@ export class CreateUserDto {
   @IsOptional()
   @IsIn(['user', 'admin', 'superadmin'])
   role?: string;
+}
+
+export class BulkCreateUserDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateUserDto)
+  users: CreateUserDto[];
 }
